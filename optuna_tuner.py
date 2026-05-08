@@ -21,8 +21,9 @@ def save_checkpoint(study, output_dir):
 
 
 def objective(trial, output_dir):
+    """Optuna objective: build, train and validate a CNN for one trial; return validation MSE."""
     try:
-        # Load data
+        # Load data — catalogue is feather-format (see README on converting from FITS)
         image_path = "physics_data/eFEDS_01to18-3dImgs-7946clus-300pix-50pix-ext_det_thr.pickle"
         catalog_path = "physics_data/eFEDS_mock_clusters_catalog_01to18-ext_det_thr.f"
 
@@ -169,7 +170,7 @@ if __name__ == "__main__":
     )
 
     # Optimization loop with periodic CSV save
-    for _ in range(args.n_trials):
+    for _trial_idx in range(args.n_trials):
         study.optimize(lambda trial: objective(trial, args.out_dir), n_trials=1)
 
         # Save CSV every CHECKPOINT_EVERY trials

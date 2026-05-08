@@ -9,3 +9,11 @@ saved_models/
 __pycache__/
 .ipynb_checkpoints/
 .env
+.DS_Store
+*.aux
+*.synctex.gz
+*.bbl
+*.fls
+*.fdb_latexmk
+.venv/
+xray-masses-env/

@@ -4,8 +4,11 @@ from keras import Sequential
 from keras.layers import RandomFlip, RandomRotation, RandomZoom, RandomCrop, Resizing
 
 class Preprocessor:
+    """Holds an image cube + parallel feature arrays, with normalisation, splitting and augmentation helpers."""
+
     def __init__(self, images, features: dict):
-        self.images = np.array(images, dtype=np.float32)     # shape: (N, H, W, C)
+        """Wrap an image cube (shape (N, H, W, C)) and a parallel dict of per-cluster feature arrays."""
+        self.images = np.array(images, dtype=np.float32)     # shape: (N, H, W, C) — clusters, height, width, channels
         self.features = {
             name: np.array(val, dtype=np.float32) for name, val in features.items()
         }
@@ -122,8 +125,8 @@ class Preprocessor:
         tuple
             (train, val, test) as Preprocessor instances.
         """
-        N = len(self.images)
-        indices = np.arange(N)
+        n_samples = len(self.images)
+        indices = np.arange(n_samples)
 
         # Split  test set
         train_val_idx, test_idx = train_test_split(indices, test_size=test_size, random_state=random_state)
@@ -177,8 +180,8 @@ class Preprocessor:
             RandomFlip("horizontal_and_vertical"),
             RandomRotation(0.1),
             RandomZoom(0.1),
-            RandomCrop(45, 45),       # that made the results a litle bit worse!  
-            Resizing(50, 50),           # Resize back to original shape
+            RandomCrop(45, 45),       # crop+resize was tested and slightly degraded results — kept for completeness
+            Resizing(50, 50),         # resize back to the original 50x50 shape
         ])
 
         augmented = []
