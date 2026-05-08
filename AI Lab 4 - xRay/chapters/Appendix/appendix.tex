@@ -1,0 +1,32 @@
+\section*{Appendix}
+
+\textbf{Note:} LLMs like DeepSeek and ChatGPT were used for spell check and debugging of the code. 
+They also assisted with creating docstrings. 
+
+\section{Code Listings}
+\subsection{Negative loss likelihood} \label{appendix:nll}
+
+\begin{lstlisting}[language=Python]
+    def loss_nll(y_true: tf.Tensor, y_pred: tf.Tensor) -> tf.Tensor:
+        """Computes the negative log-likelihood (NLL)
+        
+        Parameters
+        ----------
+        y_true : tf.Tensor
+            True target values. Shape: (batch_size,) or (batch_size, 1).
+        y_pred : tf.Tensor
+            Predicted mean and variance for each input, as output by the network.
+            Shape: (batch_size, 2), where y_pred[:, 0] = mean, y_pred[:, 1] = variance.
+        
+        Returns
+        -------
+        tf.Tensor
+            Scalar tensor representing the mean NLL loss over the batch.
+        """
+        y_true = tf.squeeze(y_true)  # shape (batch_size,)
+        mu = y_pred[:, 0]            # predicted means
+        var = y_pred[:, 1]           # predicted variances (must be positive)
+        jitter = 1e-8                # numerical stability
+        nll = 0.5 * tf.math.log(var + jitter) + 0.5 * tf.square(y_true - mu) / (var + jitter)
+        return tf.reduce_mean(nll)
+\end{lstlisting}

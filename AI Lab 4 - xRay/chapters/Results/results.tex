@@ -1,0 +1,77 @@
+\section{Conclusion}
+
+In Table~\ref{tab:model-comparison}, we summarize 
+the final performance metrics for our two best models.
+
+The \textbf{Regularized CNN model} achieved the lowest 
+validation MSE and NLL, with a coverage of $66.8\%$, 
+which is close to the expected $68\%$ for a well-calibrated 
+Gaussian model. This indicates that the model not only 
+provides accurate mass predictions but also delivers reliable 
+uncertainty estimates.
+
+In contrast, the \textbf{Trial and Error model} produced a 
+very high coverage of $90.3\%$. While this might 
+seem impressive, it can in be misleading: 
+such high coverage indicates that the model's uncertainty 
+estimates are very conservative, meaning it predicts error 
+bars that are too wide. As a result, the model may appear to 
+capture more true values within its predicted intervals, 
+but this comes at the cost of less informative, less precise 
+predictions. This interpretation is further supported by its 
+higher validation MSE and NLL, which indicate that the Trial 
+and Error model’s mass predictions are less accurate and its 
+probabilistic predictions less well-calibrated.
+
+Additionally, from the pull distributions, 
+we can further assess the quality of the the models.
+For the Regularized CNN model, 
+the pull values are evenly distributed around zero, 
+indicating well-calibrated uncertainties and no systematic
+bias in the predictions. In contrast, the pull plot 
+for the Trial and Error model exhibits an \textbf{S-shaped}
+pattern, suggesting that its uncertainties are not well 
+calibrated and may exhibit systematic deviations. This 
+further supports our belief that, despite its higher
+coverage, the Trial and Error model does not provide 
+reliable uncertainty estimates.
+
+Therefore, we conclude that the Regularized CNN model 
+provides a better balance between prediction accuracy and 
+uncertainty calibration for this task.
+
+\begin{table}[ht]
+    \centering
+    \caption{Comparison of final performance metrics for the two best models.}
+    \label{tab:model-comparison}
+    \begin{tabular}{|l|c|c|c|}
+        \hline
+        \textbf{Model} & \textbf{Best Val NLL} & \textbf{Best Val MSE} & \textbf{Coverage (\%)} \\
+        \hline
+        Regularized CNN mode & $-0.08136$ & $0.073$ & $66.8$ \\
+        Trial and Erro model & $0.0490$   & $0.217$ & $90.3$ \\
+        \hline
+    \end{tabular}
+\end{table}
+
+\textbf{Potential Improvements:}
+The aforementioned work is by no means perfect and
+can be improved in sevceral ways. First, repeating the 
+hyperparameter optimization with Optuna using 
+the negative log-likelihood (NLL) as the objective 
+would directly target better uncertainty calibration.
+Additionally, 
+experimenting with more advanced architectures—such as 
+hybrid models that combine Convolutional Neural Networks 
+(CNNs) with Transformers, or using Vision Transformers 
+(ViTs) and attention-based mechanisms—could further enhance
+performance on image data. 
+
+Another potential direction involves a more detailed investigation 
+of the auxiliary input features. In this study, we included the full 
+range of redshift and plasma temperature ($kT$) values as input features. 
+Future work could analyze the distributions of these features in more 
+detail, potentially identifying specific ranges where the model's 
+performance is stronger or where the data is more reliable. 
+
+

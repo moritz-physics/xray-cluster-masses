@@ -1,0 +1,33 @@
+Best trial:
+  Trial number: 36
+  Validation MSE: 0.0736
+  Hyperparameters:
+    extra_features: ['redshift', 'kT']
+    n_conv_layers: 3
+    filters_0: 32
+    kernel_0: [5, 5]
+    pool_0: False
+    bn_0: False
+    filters_1: 32
+    kernel_1: [2, 2]
+    pool_1: False
+    bn_1: False
+    filters_2: 128
+    kernel_2: [2, 2]
+    pool_2: False
+    bn_2: True
+    n_fnn_layers: 2
+    fnn_units_0: 64
+    fnn_bn_0: False
+    fnn_dropout_0: True
+    fnn_dropout_rate_0: 0.45092424718348345
+    fnn_units_1: 256
+    fnn_bn_1: False
+    fnn_dropout_1: True
+    fnn_dropout_rate_1: 0.40360316306004007
+    n_head_layers: 1
+    head_units_0: 256
+    head_bn_0: False
+    head_dropout_0: False
+    lr: 0.0002615131570097966
+    use_augmentation: True

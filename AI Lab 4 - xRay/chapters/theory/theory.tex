@@ -1,0 +1,136 @@
+\section{Galaxy Clusters}
+
+Galaxy clusters are the largest gravitationally bound structures in the Universe, 
+comprising hundreds to thousands of galaxies, 
+vast amounts of hot intracluster gas that emits X-rays, and of dark matter.
+Typically, galaxy clusters span between $1$ and $5$~Mpc in diameter, 
+in comparison individual galaxies (such as the Milky way), are on the order of $10$--$100$~kpc. Their total 
+masses are in the range $10^{14}$ to $10^{15}~M_\odot$. 
+
+The composition of a galaxy cluster includes three main components. First, the 
+galaxies themselves, which contribute only a small fraction of the total mass. 
+Second, the hot intracluster gas (plasma), which dominates the baryonic mass and is heated to temperatures 
+of $10^7$--$10^8$~K, emits strongly in X-rays via thermal bremsstrahlung. Finally, dark matter, 
+which is about about 80\% of the total mass, a mysterious form of matter that has so far escaped direct detection with any type of 
+telescope, but makes its presence felt through its gravitational pull on the galaxies and hot gas.
+
+Clusters cannot be made only of galaxies, as the observed gravitational potential 
+(measured via the velocities of galaxies and the temperature distribution of the gas) 
+far exceeds the mass inferred from visible matter alone. This discrepancy highlights the 
+crucial role of both the hot intracluster medium (ICM) and dark matter in cluster dynamics 
+and structure.
+
+In different observable wavelengths, galaxy clusters exhibit different features.
+In optical light, they appear as dense concentrations of galaxies. In contrast, X-ray observations 
+reveal emission from the hot ICM, outlining the gravitational potential of the cluster. 
+Observatories such as Chandra, XMM-Newton, and eROSITA are sensitive to this emission in the $0.1$--$10$~keV energy range.
+
+The X-ray emission from the ICM is primarily due to thermal bremsstrahlung (free-free emission), which depends on the density and temperature of the gas. The spatial distribution of the X-ray emitting gas is often modeled using the $\beta$-model (see \cite{Sarazin2002_NED}):
+
+\[
+\rho(r) = \rho_0 \left[ 1 + \left( \frac{r}{r_c} \right)^2 \right]^{-3\beta/2},
+\]
+
+where $\rho_0$ is the central gas density, $r_c$ is the core radius, and $\beta$ is a slope parameter. By projecting this profile along the line of sight, one obtains the X-ray surface brightness profile, which can be fit to observational data.
+
+Under the assumption of an isothermal gas in hydrostatic equilibrium, the total gas mass $M_g$ of a galaxy cluster can be estimated using the $\beta$-model as:
+
+\[
+M_g = \pi^{3/2} \, \rho_{g0} \, r_c^3 \, \frac{\Gamma\left( \frac{3\beta - 1}{2} \right)}{\Gamma\left( \frac{3\beta}{2} \right)} \quad \text{for } \beta > 1
+\]
+
+Alternatively, in terms of the central gas number density $n_0$,
+
+\[
+M_g = 3.15 \times 10^{12} \, M_\odot \left( \frac{n_0}{10^{-3} \, \text{cm}^{-3}} \right) \left( \frac{r_c}{0.25 \, \text{Mpc}} \right)^3 \frac{\Gamma\left( \frac{3\beta - 1}{2} \right)}{\Gamma\left( \frac{3\beta}{2} \right)}
+\]
+
+where:
+\begin{itemize}
+    \item $n_0$ is the central gas number density,
+    \item $r_c$ is the core radius of the cluster,
+    \item $\beta$ is the slope parameter from the $\beta$-model,
+    \item $\Gamma$ is the gamma function,
+    \item $\rho_{g0}$ is the central gas density.
+\end{itemize}
+
+These relations allow us to estimate the 
+gas and total mass profiles of a cluster from observed X-ray 
+surface brightness and gas temperature, providing key information 
+for understanding the gravitational mass distribution in galaxy 
+clusters.
+
+
+\section{Convolutional Neural Networks (CNNs) for Image Analysis}
+
+Convolutional Neural Networks (CNNs) are a class of deep learning 
+models particularly effective for image analysis. In this lab, due to the nature of our data (iamages of galaxy clusters)
+we will build and train CNNs.
+For more theoretical background, 
+see Goodfellow et al.~\cite{Goodfellow-et-al-2016} and the TensorFlow 
+CNN tutorial\footnote{\url{https://www.tensorflow.org/tutorials/images/cnn}}. 
+
+
+A standard CNN typically consists of the following components:
+\begin{itemize}
+    \item \textbf{Input layer:} Accepts the input image data.
+    \item \textbf{Convolutional layers (Conv2D):} Apply filters (kernels) to 
+    extract spatial features from the input.
+    \item \textbf{Activation functions:} Introduce nonlinearity (commonly ReLU).
+    \item \textbf{Pooling layers:} Downsample feature maps, typically via max pooling.
+    \item \textbf{Dropout layers:} Reduce overfitting by randomly deactivating 
+    neurons during training.
+    \item \textbf{Fully connected layers:} Integrate features to make final predictions.
+    \item \textbf{Output layer:} Produces the classification result.
+\end{itemize}
+
+The core of a CNN is the \textbf{convolutional layer}, this layer applies a set of 
+learnable filters (kernels) on the input. Each filter slides across the 
+input image (or previous feature map), performing an element-wise 
+multiplication and summing the result to produce a \emph{feature map}. 
+Important hyperparameters include:
+
+\begin{itemize}
+    \item \textbf{Kernel size:} The spatial dimensions of the filter (e.g., $3 \times 3$).
+    \item \textbf{Filters:} The number of different filters (feature maps) in the layer.
+    \item \textbf{Stride:} The step size the filter moves with; higher stride means more downsampling.
+    \item \textbf{Padding:} Controls if the input is padded (e.g., with zeros) at the borders.
+\end{itemize}
+
+A key difference between CNNs and fully connected (dense) neural networks is that
+CNNs exploit \emph{local spatial correlations} in image data through weight sharing.
+Weight sharing in CNNs means that the same set of filter weights is 
+applied across the entire input image as the filter moves. 
+This enables the network 
+to detect the same pattern regardless of its position in the image.
+Whereas, on the other hand, dense networks connect every input to every 
+neuron in the next layer and tend to capture more global features. 
+CNNs are therefore more efficient and effective for processing image data.
+One could also note that if we apply a filter that is the same size 
+as the input image then the convolution operation becomes equivalent to a 
+fully connected (dense) layer therefore CNNs can be thought of as a "generalization" of FNNs.
+
+
+\subsection{Motivation for CNNs and ML}
+
+Our current methods for estimating the mass of galaxy clusters 
+from X-ray data rely on physical models that assume the intracluster gas is in 
+hydrostatic equilibrium. While these analytical approaches 
+(such as the $\beta$-model) have been very successful, they are 
+based on simplifying assumptions, such as spherical symmetry and --
+hydrostatic equilibrium, which may not fully capture the complexities of 
+real clusters—especially when clusters are disturbed. As a result, 
+such models may be limited in accuracy or 
+applicability for certain cluster populations.
+
+Machine learning (ML), and Convolutional Neural Networks (CNNs) 
+in particular, offer a complementary approach. CNNs are designed 
+to extract subtle spatial and spectral patterns from images,
+making them ideally suited for X-ray observations.
+By training on  datasets of simulated clusters, CNNs can 
+learn to recognize features correlated 
+with cluster mass that may not be accessible to traditional 
+analytical methods. Furthermore, ML approaches can generalize 
+to situations where the underlying 
+physical assumptions are only approximately valid, or where 
+the data is too complex for simple analytic models.

@@ -1,0 +1,11 @@
+physics_data/
+__pychache__/*.fits
+*.pickle
+*.pkl
+data/
+*.h5
+*.keras
+saved_models/
+__pycache__/
+.ipynb_checkpoints/
+.env
