@@ -6,6 +6,8 @@ from keras.models import Model
 
 
 class ModelFactory:
+    """Factory for assembling configurable CNN regression models that output (mean, variance) per sample."""
+
     def build_cnn(
         image_shape,
         conv_config_layers: list ,
@@ -57,7 +59,7 @@ class ModelFactory:
         """
         
         img_in = Input(shape=image_shape, name="image_input")
-        x = img_in
+        x = img_in  # x carries the running tensor through the conv/dense stack
 
         for cfg in conv_config_layers:
             x = layers.Conv2D(
@@ -102,22 +104,23 @@ class ModelFactory:
                 {"units": 32, "activation": "relu"},
                 {"units": 16, "activation": "relu"},
             ]
-            h = merged
+            head_tensor = merged  # running tensor through the head dense stack
             for cfg in head_cfg:
-                h = layers.Dense(
+                head_tensor = layers.Dense(
                     cfg["units"],
-                    activation=cfg.get("activation","relu"))(h)
+                    activation=cfg.get("activation","relu"))(head_tensor)
                 if cfg.get("batchnorm", False):
-                    h = layers.BatchNormalization()(h)
+                    head_tensor = layers.BatchNormalization()(head_tensor)
                 if cfg.get("dropout", False):
-                    h = layers.Dropout(cfg.get("dropout_rate",0.3))(h)
+                    head_tensor = layers.Dropout(cfg.get("dropout_rate",0.3))(head_tensor)
 
-            out = layers.Dense(2, name="raw_outputs")(h)
-            out = layers.Lambda(lambda x: tf.stack([x[:, 0], tf.sigmoid(x[:, 1])], axis=1), name="final_output")(out)
+            out = layers.Dense(2, name="raw_outputs")(head_tensor)
+            # Squash the variance channel through a sigmoid so it stays in (0, 1) and positive.
+            out = layers.Lambda(lambda t: tf.stack([t[:, 0], tf.sigmoid(t[:, 1])], axis=1), name="final_output")(out)
             model = Model(inputs=inputs, outputs=out, name="cnn_with_aux")
         else:
             out = layers.Dense(2, name="raw_outputs")(x)
-            out = layers.Lambda(lambda x: tf.stack([x[:, 0], tf.sigmoid(x[:, 1])], axis=1), name="final_output")(out)
+            out = layers.Lambda(lambda t: tf.stack([t[:, 0], tf.sigmoid(t[:, 1])], axis=1), name="final_output")(out)
             model = Model(inputs=img_in, outputs=out, name="cnn")
 
         # save summary

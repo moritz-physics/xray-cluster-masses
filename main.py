@@ -7,9 +7,10 @@ from training import Trainer
 from keras.optimizers import Adam
 
 
-def run_pipeline(extra_features: list[str], output_dir: str, augment_images:bool = False):
+def run_pipeline(extra_features: list[str], output_dir: str, augment_images: bool = False):
+    """Run end-to-end: load data, preprocess, build CNN, train with NLL loss, evaluate, save artefacts."""
 
-    # data path
+    # data path — catalogue is feather-format (see README on converting from FITS)
     image_path = "physics_data/eFEDS_01to18-3dImgs-7946clus-300pix-50pix-ext_det_thr.pickle"
     catalog_path = "physics_data/eFEDS_mock_clusters_catalog_01to18-ext_det_thr.f"
 
@@ -34,7 +35,7 @@ def run_pipeline(extra_features: list[str], output_dir: str, augment_images:bool
 
     # build training, validation and test inputs
 
-    x_train, y_train = train_set.get_xy("mass") # assings x_train the images and y_train the masses x_train.shape (N,H,W,C)
+    x_train, y_train = train_set.get_xy("mass")  # x_train: images (N, H, W, C); y_train: normalised log-masses
     x_val,   y_val   = val_set.get_xy("mass")
     x_test,  y_test  = test_set.get_xy("mass")
 
@@ -57,7 +58,7 @@ def run_pipeline(extra_features: list[str], output_dir: str, augment_images:bool
         # ensure input shape for added features
         aux_shapes[feat] = add_train.shape[1:]  # (1,)
 
-    input_shape = x_train.shape[1:] #(W,H,C)
+    input_shape = x_train.shape[1:]  # (H, W, C) — height, width, channels
 
     # configuration of model
     # conv_layers = [
@@ -95,7 +96,7 @@ def run_pipeline(extra_features: list[str], output_dir: str, augment_images:bool
     ]
     learning_rate = 0.0002615
 
-    # redhist kT and image augmentation
+    # Best Optuna config used: redshift + kT + image augmentation
     # ------------------------- OPTUNA STUDY RESULTS ------------------------- #
 
 

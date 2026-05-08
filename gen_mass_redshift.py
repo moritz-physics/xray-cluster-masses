@@ -1,30 +1,29 @@
+"""Catalogue exploration script: probes the pickle/feather data files and
+generates per-feature histograms in `all_plots/`."""
+
 import pickle
 from astropy.io import fits
 import pandas as pd
 import matplotlib.pyplot as plt
-import os 
+import os
 
 
+# Probe the image pickle: what's in it, what types and lengths?
 with open("physics_data/eFEDS_01to18-3dImgs-7946clus-300pix-50pix-ext_det_thr.pickle", "rb") as f:
     data = pickle.load(f)
 
-# What is this thing?
-print(type(data)) # it is a dic
-
+print(type(data))  # expect: dict
 print(data.keys())
 
 for key in data.keys():
-    # what type are the kyes?
-    print(f"The {key} is of {type(data[key])} type ") # they are lists
-    print(f"The len of {key} is {len(data[key])}")
+    print(f"data[{key!r}] is a {type(data[key]).__name__} of length {len(data[key])}")
 
-
-print(f" what is the type of the elemetns of the data['cluster'] ",type(data['cluster'][0]))
-print(f" what is the type of the elemetns of the data['gsm_3dImgs'] ",type(data['gsm_3dImgs'][0]))
-print(f" what is the length of the elemetns of the data['gsm_3dImgs'] ",len(data['gsm_3dImgs'][0]))
+print(f"type of data['cluster'][0]:    {type(data['cluster'][0])}")
+print(f"type of data['gsm_3dImgs'][0]: {type(data['gsm_3dImgs'][0])}")
+print(f"len  of data['gsm_3dImgs'][0]: {len(data['gsm_3dImgs'][0])}")
 
 print()
-print("lETS LOOK AT THE OTHER FILE!")
+print("Now inspecting the catalogue file...")
 print()
 
 df = pd.read_feather("physics_data/eFEDS_mock_clusters_catalog_01to18-ext_det_thr.f")
@@ -33,7 +32,7 @@ print(df.head())
 
 
 
-# Load data
+# Re-load the catalogue from the prep-images directory used while generating plots.
 df = pd.read_feather("physics_prep_images/eFEDS_mock_clusters_catalog_01to18-ext_det_thr.f")
 
 # Create output folder

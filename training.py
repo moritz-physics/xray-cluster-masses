@@ -7,8 +7,10 @@ import matplotlib.gridspec as gridspec
 from preprocessing import Preprocessor
 
 class Trainer():
+    """Wraps a Keras model with training, evaluation, prediction and result-plotting helpers."""
 
     def __init__(self, model, output_dir):
+        """Bind a Keras model to an output directory (created if needed) for artefacts and plots."""
         self.model = model
         self.output_dir = output_dir
         self.history = None
@@ -34,7 +36,7 @@ class Trainer():
         y_true = tf.squeeze(y_true)  # shape (batch_size,)
         mu = y_pred[:, 0]            # predicted means
         var = y_pred[:, 1]           # predicted variances (must be positive)
-        jitter = 1e-8                # numerical stability
+        jitter = 1e-8                # avoid log(0) and division by 0
         nll = 0.5 * tf.math.log(var + jitter) + 0.5 * tf.square(y_true - mu) / (var + jitter)
         return tf.reduce_mean(nll)
 
@@ -56,7 +58,7 @@ class Trainer():
             Mean squared error between predicted means and true values.
         """
         y_true = tf.squeeze(y_true)       # handle (batch, 1) or (batch,)
-        mu = y_pred[:, 0]
+        mu = y_pred[:, 0]                 # use only the predicted mean, ignore variance
         return tf.reduce_mean(tf.square(y_true - mu))
 
 
@@ -155,7 +157,7 @@ class Trainer():
         """
 
         val_loss, val_mse = self.model.evaluate(x_val,  y_val, verbose=2)
-        print(f"Val loss: {val_loss:.4f}, Test MSE: {val_mse:.4f}")
+        print(f"Eval loss: {val_loss:.4f}, MSE on mean head: {val_mse:.4f}")
         return val_loss, val_mse
 
 
@@ -322,9 +324,9 @@ class Trainer():
         """
         y_pred = np.array(y_pred)
         y_true = np.array(y_true).flatten()
-        means = y_pred[:, 0]
-        vars_ = y_pred[:, 1]
-        stds = np.sqrt(vars_)
+        means = y_pred[:, 0]              # predicted mean per cluster
+        variances = y_pred[:, 1]          # predicted variance per cluster (sigmoid-bounded)
+        stds = np.sqrt(variances)         # 1-sigma uncertainty per cluster
 
         # Denormalize if needed
         if prep is not None:
@@ -341,10 +343,10 @@ class Trainer():
         mean_sorted = means[idx_sort]
         std_sorted = stds[idx_sort]
 
-        # Plot
+        # Plot — main scatter on top, residual ("pull") panel below
         fig = plt.figure(figsize=(7, 7))
-        gs = gridspec.GridSpec(2, 1, height_ratios=[4, 1], hspace=0.05)
-        ax_main = plt.subplot(gs[0])
+        grid = gridspec.GridSpec(2, 1, height_ratios=[4, 1], hspace=0.05)
+        ax_main = plt.subplot(grid[0])
 
         # Shaded region for ±1σ region around y=x
         ax_main.fill_between(
@@ -373,12 +375,11 @@ class Trainer():
         ax_main.grid(True)
         ax_main.set_xticklabels([])
 
-        # Lower plot: Pull
-        ax_res = plt.subplot(gs[1], sharex=ax_main)
+        # Lower plot: Pull — (residual / predicted sigma); should look like N(0, 1) if calibrated
+        ax_res = plt.subplot(grid[1], sharex=ax_main)
         pull = (means - y_true) / stds
         ax_res.axhline(0, color="black", linestyle="--")
         ax_res.scatter(y_true, pull, alpha=0.5, s=10)
-        # ax_res.errorbar(y_true, pull, yerr=np.std(pull))
         ax_res.set_xlabel(r"True $\log_{10}(M_{500c}/M_\odot)$")
         ax_res.set_ylim(-2, 2)
         ax_res.set_ylabel("Pull")
